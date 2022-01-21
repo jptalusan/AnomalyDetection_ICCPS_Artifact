@@ -485,7 +485,8 @@ def reset_files():
                  'synth_all_incidents_ground_truth.pkl',
                  'synth_Reduced_DF_2019_10_1.pkl',
                  'synth_Reduced_DF_2019_11_1.pkl',
-                 'synth_Reduced_DF_2019_12_1.pkl']
+                 'synth_Reduced_DF_2019_12_1.pkl',
+                 '.gitignore']
     
     for file in os.listdir(synth_data):
         filename = os.fsdecode(file)

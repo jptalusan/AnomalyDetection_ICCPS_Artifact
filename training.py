@@ -68,7 +68,8 @@ with open(fp, 'wb') as handle:
     pickle.dump(cluster_list, handle)    
 
 def reset_files():
-    exception = ['used_clusters_list_synth.pkl']
+    exception = ['used_clusters_list_synth.pkl',
+                 '.gitignore']
 
     for file in os.listdir(synth_results):
         filename = os.fsdecode(file)

@@ -1,0 +1,9 @@
+geopandas==0.10.2
+osmnx==1.1.2
+networkx==2.6.3
+Shapely==1.8.0
+Rtree==0.9.7
+descartes
+tqdm
+fastparquet==0.7.2
+seaborn

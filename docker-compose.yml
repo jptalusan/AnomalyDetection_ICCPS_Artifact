@@ -1,0 +1,9 @@
+version: '3'
+services:
+  anomaly_detection:
+    build: .
+    ports:
+      - "10050:8888"
+    volumes:
+      - ./:/home/jovyan/work
+  

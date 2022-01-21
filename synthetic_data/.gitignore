@@ -1,0 +1,9 @@
+*
+!.gitignore
+!synth_overall_means.pkl
+!synth_segments_grouped.pkl
+!synth_line_segment_graph.pkl
+!synth_all_incidents_ground_truth.pkl
+!synth_Reduced_DF_2019_10_1.pkl
+!synth_Reduced_DF_2019_11_1.pkl
+!synth_Reduced_DF_2019_12_1.pkl

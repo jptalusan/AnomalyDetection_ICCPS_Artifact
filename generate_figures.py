@@ -2,22 +2,17 @@ print("Generating figures...")
 
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
-import datetime
 import random
 import os
 import pickle
 
 import numpy as np
-import geopandas as gpd
 import matplotlib.pyplot as plt
-import osmnx as ox
 import networkx as nx
 import contextily as cx
 import matplotlib.dates as md
 
 from itertools import combinations
-from copy import deepcopy
-from scipy.stats import hmean
 from matplotlib.lines import Line2D
 
 from src.common_functions import *
@@ -41,9 +36,6 @@ end_time   = '20:55'
 training_months = 10
 cross_validation_months = 11
 testing_months = 12
-months = {'january': 1, 'february': 2, 'march': 3, 'april': 4, 'may': 5,
-          'june': 6, 'july': 7, 'august': 8, 'september': 9, 'october': 10,
-          'november': 11, 'december': 12}
 granularity = 5
 new_filename = 'synth'
 kappa_L = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
@@ -313,7 +305,6 @@ def test_all_kappas():
         filename = os.fsdecode(file)
         if 'incidents.pkl' in filename:
             fp = os.path.join(synth_data, filename)
-            print(fp)
             df = pd.read_pickle(fp)
             info_ratio_incidents.append(df)
             
@@ -377,8 +368,7 @@ def test_all_kappas():
 
         testing_incident_GT = incident_GT_Frame.between_time(start_time, end_time)
         testing_incident_GT_Clist = testing_incident_GT[testing_incident_GT['cluster_head'].isin (cluster_list)]
-        testing_incident_GT_Clist = testing_incident_GT_Clist[(testing_incident_GT_Clist.index.month >= months['october']) 
-                                                            & (testing_incident_GT_Clist.index.month <= months['december'])]
+        testing_incident_GT_Clist = testing_incident_GT_Clist[testing_incident_GT_Clist.index.month == testing_months]
 
         testing = combined_ratio_frame_incidents.between_time(start_time, end_time)
         testing =  testing[(testing.index.month>9) & (testing.index.month<=12) ]
@@ -754,24 +744,31 @@ def graph_ith_cluster(kappa_df):
     plt.savefig(fp, dpi=200, format='png', bbox_inches='tight')
 
 if __name__ == "__main__":
-    print("Starting to generate table and graphs...")
-    print("Generating Clustering Data Table...")
+    print()
+    print()
+    print("--Anomaly based Incident Detection in Large Scale Smart Transportation Systems--")
+    print("for ICCPS2022 Artifact Evaluation...")
+    print()
+    print()
+
+    print("0/6:Starting to generate table and graphs...")
+    print("1/6:Generating Clustering Data Table...")
     clustering_table_2()
 
-    print("Generating map and clusters...")
+    print("2/6:Generating map and clusters...")
     cluster_graph()
 
-    print("Generating Figure 5...")
+    print("3/6:Generating Figure 5...")
     generate_figure_5()
 
-    print("Generating and graphing Kappa tests...")
+    print("4/6:Generating and graphing Kappa tests...")
     test_all_kappas()
     kappa_df = graph_kappa_results()
 
-    print("Graph ROC...")
+    print("5/6:Graph ROC...")
     graph_ROC(kappa_df=kappa_df)
 
-    print("Graph for ith cluster...")
+    print("6/6:Graph for ith cluster...")
     graph_ith_cluster(kappa_df=kappa_df)
 
     print("Finished graphing everything...")

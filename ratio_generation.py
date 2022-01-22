@@ -259,7 +259,7 @@ def cluster_correlation_optimization():
     SG.remove_edges_from(edges_to_remove)
 
     # Clustering Approximation Algorithm
-    logging = True
+    logging = False
     random.seed(100)
     clustered_nodes = []
     clusters = {}

@@ -2,6 +2,8 @@ version: '3'
 services:
   anomaly_detection:
     build: .
+    environment:
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./:/home/jovyan/work
   

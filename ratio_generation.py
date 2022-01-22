@@ -3,7 +3,6 @@ warnings.filterwarnings('ignore')
 import os
 import random
 import networkx as nx
-import sys
 import pandas as pd
 import geopandas as gpd
 import numpy as np
@@ -12,15 +11,11 @@ import time
 import pickle
 
 from copy import deepcopy
-from scipy.stats.stats import pearsonr
 from scipy.stats import hmean
+from shapely.geometry import Point
 
-from shapely.geometry import Point, Polygon, LineString
-
-from src import network_graphing as net_graph
 from src import data_processing as data_proc
 from src import cleaning_data
-from src.utils import Read_DF, Call_Back
 
 if not os.path.exists(os.path.join(os.getcwd(), 'synthetic_data')):
     raise OSError("Must first download data, see README.md")
@@ -46,14 +41,6 @@ def list_all_segments_in_clusters(clusters):
     for k, v in clusters.items():
         segments = segments + v
     return segments
-
-def locate_segment_cluster(segment, clusters):
-    if pd.isnull(segment):
-        return -1
-    for i, cluster in enumerate(list(clusters)):
-        if segment in clusters[cluster]:
-            return cluster
-    return -1
 
 def get_correlation(sub_df, segment_1_ID, segment_2_ID, _method='pearson'):
     segment_1_data = sub_df[segment_1_ID]
@@ -243,6 +230,9 @@ def cluster_correlation_optimization():
         G.nodes[segment_id2]['center_m'] = (centroid_m.x, centroid_m.y)
         G.edges[(segment_id1, segment_id2, 0)]['correlation'] = correlation
 
+    fp = os.path.join(synth_data, 'synth_loaded_G_correlation_weekday_6am_9pm.pkl')
+    nx.write_gpickle(G, fp)
+
     positive_edges = [e for e in G.edges if G.get_edge_data(*e)['correlation'] >= lower_bound_correlation]
     positive_nodes = list(set([n[0] for n in positive_edges] + [n[1] for n in positive_edges]))
 
@@ -351,9 +341,13 @@ def cluster_correlation_optimization():
     with open(fp, 'wb') as handle:
         pickle.dump(clusters, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+    stats_df = pd.DataFrame(stats_dict)
+    fp = os.path.join(synth_data, f'synth_optimized_clustering_stats.pkl')
+    stats_df.to_pickle(fp)
+
     fp = os.path.join(synth_data, 'synth_all_incidents_ground_truth.pkl')
     all_incidents_gt = pd.read_pickle(fp)
-    all_incidents_gt['cluster_head'] = all_incidents_gt['segmentID'].apply(lambda x: locate_segment_cluster(x, clusters))
+    all_incidents_gt['cluster_head'] = all_incidents_gt['segmentID'].apply(lambda x: cleaning_data.locate_segment_cluster(x, clusters))
     all_incidents_gt = all_incidents_gt[all_incidents_gt['cluster_head'] != -1]
     
     print("2/5:Saved ground truth incidents for clusters as: synth_cluster_ground_truth.pkl")
@@ -423,7 +417,7 @@ def cluster_ratio_cleaning():
     # Loop through by month
     for month in months:
         incidents = df_incidents_gt[df_incidents_gt.index.month == month]
-        df_incidents_gt['cluster_head'] = df_incidents_gt['segmentID'].apply(lambda x: locate_segment_cluster(x, clusters))
+        df_incidents_gt['cluster_head'] = df_incidents_gt['segmentID'].apply(lambda x: cleaning_data.locate_segment_cluster(x, clusters))
         df_incidents_gt = df_incidents_gt[df_incidents_gt['cluster_head'] != -1]
         # df_incidents_gt.to_pickle(f"{cluster_version}_ground_truth.pkl")
         df_incidents_gt = df_incidents_gt.between_time('06:00:00', '21:00:00')
@@ -498,9 +492,8 @@ if __name__ == '__main__':
     print("--Anomaly based Incident Detection in Large Scale Smart Transportation Systems--")
     print("for ICCPS2022 Artifact Evaluation...")
     print()
-    print()    
-    print()    
-    print()    
+    print()
+    print()
     print("Deleting previously generated files...")
     reset_files()
     
@@ -512,8 +505,8 @@ if __name__ == '__main__':
     print("4/5:Finished Ratio Generation...")
     cluster_ratio_cleaning()
     print("5/5:Finished Ratio Generation...")
-    print("Done generating files for the first part...")    
-    print()    
+    print("Done generating files for the first part...")
+    print()
     print("Continuing to training...")
     elapsed_time = time.time() - start_time
     print(f"Finished clustering and ratio generation in {elapsed_time:.3f} s")

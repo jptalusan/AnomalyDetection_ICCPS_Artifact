@@ -1,8 +1,6 @@
 # import pickle
 import sys
 import numpy as np
-# import pandas as pd
-
 
 def calculate_tmax_RR(Q_residual):
     global maxThreshold1
@@ -49,11 +47,9 @@ def old_calculate_tmax(Q_residual):
                 else:
                     pSum += abs(taoThreshold - row) * 2
         taoSumDiff = abs(costSum - pSum)
-#         difference[taoThreshold] = taoSumDiff
         if (maxSum > taoSumDiff):
             maxSum = taoSumDiff
             maxThreshold1 = taoThreshold
-#     lists = sorted(difference.items())  # sorted by key, return a list of tuples
     return maxThreshold1
 
 def old_calculate_tmin(Q_residual):
@@ -71,17 +67,13 @@ def old_calculate_tmin(Q_residual):
                 else:
                     pSum += abs(taoThreshold - row) * 2
         taoSumDiff = abs(costSum - pSum)
-#         difference[taoThreshold] = taoSumDiff
         if (minSum > taoSumDiff):
             minSum = taoSumDiff
             minThreshold1 = taoThreshold
-#     lists = sorted(difference.items())  # sorted by key, return a list of tuples
     return minThreshold1
 
 def calculate_tmax(Q_residual):
-    minSum = sys.float_info.max
     max_candidate = max(Q_residual)
-    minThreshold1 = None
     thresholds = list(np.arange(0.00025, max_candidate, 0.00025))
     if not thresholds:
         return None
@@ -98,8 +90,6 @@ def calculate_tmax(Q_residual):
                          0)
     
     taoSumDiff_arr = abs(costSum.sum(axis=0) - pSum.sum(axis=0))
-#     print(taoSumDiff_arr.min())
-#     min_idx = np.where(taoSumDiff_arr == taoSumDiff_arr.min())[0][0]
     try:
         min_idx = np.where(taoSumDiff_arr == taoSumDiff_arr.min())[0][0]
         return thresholds[min_idx]
@@ -110,12 +100,9 @@ def calculate_tmax(Q_residual):
         print(pSum.shape)
         print(taoSumDiff_arr.shape)
         return None
-#     print(f"MaxTaoThreshold: {thresholds[min_idx]}")
     
 def calculate_tmin(Q_residual):
-    minSum = sys.float_info.max
     min_candidate = min(Q_residual)
-    minThreshold1 = None
     thresholds = list(np.arange(min_candidate, 0, 0.00025))
     if not thresholds:
         return None
@@ -132,7 +119,6 @@ def calculate_tmin(Q_residual):
                          0)
     
     taoSumDiff_arr = abs(costSum.sum(axis=0) - pSum.sum(axis=0))
-#     print(taoSumDiff_arr.min())
     try:
         min_idx = np.where(taoSumDiff_arr == taoSumDiff_arr.min())[0][0]
         return thresholds[min_idx]
@@ -144,8 +130,6 @@ def calculate_tmin(Q_residual):
         print(taoSumDiff_arr.shape)
         return None
         
-#     print(f"MinTaoThreshold: {thresholds[min_idx]}")
-#region Huber Loss function
 def calculate_tmax_huber(Q_residual,beta,w1,w2):
     max_candidate = max(Q_residual)
     thresholds = list(np.arange(0.00025, max_candidate, 0.00025))
@@ -161,8 +145,6 @@ def calculate_tmax_huber(Q_residual,beta,w1,w2):
                     pow((thresholds_mat - residuals_mat) * w1, 2) * (0.5),beta * abs((thresholds_mat - residuals_mat)) * w1 - (0.5) * pow(beta, 2))
 
     taoSumDiff_arr = abs(costSum.sum(axis=0) + pSum.sum(axis=0))
-    #     print(taoSumDiff_arr.min())
-    #     min_idx = np.where(taoSumDiff_arr == taoSumDiff_arr.min())[0][0]
     try:
         min_idx = np.where(taoSumDiff_arr == taoSumDiff_arr.min())[0][0]
         return thresholds[min_idx]
@@ -181,18 +163,7 @@ def calculate_tmin_huber(Q_residual,beta,w1,w2):
         return None
     thresholds_mat = np.repeat([np.array(thresholds)], len(Q_residual), axis=0)
     residuals_mat = np.repeat([Q_residual.to_numpy()], len(thresholds), axis=0).transpose()
-    diff_mat = thresholds_mat - residuals_mat
-    # if x >= 0:
-    #     if (abs(x) * w2) <= b:
-    #         cost += .5 * ((abs(x) * w2) ** 2)
-    #     else:
-    #         cost += b * (abs(x) * w2) - .5 * (b ** 2)
-    # else:
-    #     if (abs(x) * w1) <= b:
-    #         cost += .5 * ((abs(x) * w1) ** 2)
-    #     else:
-    #         cost += b * (abs(x) * w1) - (.5 * (b ** 2))
-
+    
     costSum = np.where(((residuals_mat < 0) & ((thresholds_mat - residuals_mat) > 0)),
                        pow((thresholds_mat - residuals_mat) * w2, 2) * (0.5),
                        beta * abs((thresholds_mat - residuals_mat)) * w2 - (0.5) * pow(beta, 2))
@@ -202,8 +173,6 @@ def calculate_tmin_huber(Q_residual,beta,w1,w2):
                     beta * abs((thresholds_mat - residuals_mat)) * w1 - (0.5) * pow(beta, 2))
 
     taoSumDiff_arr = abs(costSum.sum(axis=0) + pSum.sum(axis=0))
-    #     print(taoSumDiff_arr.min())
-    #     min_idx = np.where(taoSumDiff_arr == taoSumDiff_arr.min())[0][0]
     try:
         min_idx = np.where(taoSumDiff_arr == taoSumDiff_arr.min())[0][0]
         return thresholds[min_idx]
@@ -267,16 +236,3 @@ def calculate_residual(nabla,SF):
                         RUC[index] = group_D.loc[index,'nabla']
                     frame_iterator = frame_iterator + 1
     return RUC
-
-# fp_nabla = '../nabla_test.pickle'
-# with open(fp_nabla, 'rb') as handle:
-#     nabla = pickle.load(handle)
-# # nabla = nabla.sort_index()
-# # print(nabla)
-# # nabla_foc = nabla[pd.Timestamp('2019-01-01 06:00:00'):pd.Timestamp('2019-01-01 20:55:00')]
-# print("********nabla*******")
-# print(len(nabla[nabla['nabla'] > 0]))
-# RUC = calculate_residual(nabla,7)
-# ruc_frame = pd.DataFrame(list(RUC.items()),columns = ['time','RUC'])
-# print("*******RUC********")
-# print(len(ruc_frame[ruc_frame['RUC'] > 0]))

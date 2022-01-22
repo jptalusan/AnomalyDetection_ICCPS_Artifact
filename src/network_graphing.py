@@ -1,10 +1,5 @@
-import os
-import random
-import matplotlib.pyplot as plt
 import networkx as nx
-import osmnx as ox
 import pandas as pd
-import geopandas as gpd
 import numpy as np
 
 pd.options.mode.chained_assignment = None  # default='warn'

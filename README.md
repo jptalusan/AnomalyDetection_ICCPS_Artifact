@@ -7,6 +7,7 @@ This is the repository for our paper that was accepted to ICCPS2022. All private
     * 2.9 GHz Quad-Core Intel Core i7
     * Docker Desktop 2.5.0.1
     * docker-compose version 1.27.4, build 40524192
+    > Will change
     * Clustering: 77.449 s
     * Training: 358.21 s
 * Ubuntu (TBA)
@@ -49,5 +50,15 @@ This will generate the following files. Note that the results are based on synth
     * optimized_results_synth.pkl
     * optimized_actual_detection_frame_synth.pkl
     * optimized_detection_report_Frame_synth.pkl
+    > In addition we generate the following for each kappa value
+    * κ_optimized_actual_detection_frame_synth.pkl
+    * κ_optimized_detection_report_Frame_synth.pkl
+    * κ_optimized_residual_Test_QR_synth.pkl
+    * κ_optimized_results_synth.pkl
 * `synthetic_figures`
-    > None yet
+    * synth_baseline_map.png: Clustering visualiztion (not in paper)
+    * synth_Table_2.txt: Cluster information
+    * synth_Figure_5: Detection illustration RUC of ith cluster
+    * synth_Figure_7a: Detection performance
+    * synth_Figure_8a: ROC curve
+    * synth_Figure_8b: Mean time between false positives

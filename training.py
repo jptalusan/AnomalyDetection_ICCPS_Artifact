@@ -669,4 +669,4 @@ if __name__ == "__main__":
     detection_report_Frame.to_pickle(fp)
 
     elapsed_time = time.time() - time_start
-    print(f"8/8: Done training in {elapsed_time} s")
+    print(f"8/8: Done training in {elapsed_time:.3f} s")

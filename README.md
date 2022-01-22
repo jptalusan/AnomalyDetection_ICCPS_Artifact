@@ -1,9 +1,19 @@
 # ICCPS 2022
 ## Anomaly based Incident Detection in Large Scale Smart Transportation Systems
-This is the repository for our paper that was accepted to ICCPS2022. All private and proprietary data has been censored, anonymized and then synthesized.
+This is the repository for our paper that was accepted to ICCPS2022. All private and proprietary data has been censored, anonymized and then synthesized. This has been tested on Ubuntu and OSX devices.
+
+### Tested on:
+* MacBook Pro (15-inch, 2017) 10.15.7
+    * 2.9 GHz Quad-Core Intel Core i7
+    * Docker Desktop 2.5.0.1
+    * docker-compose version 1.27.4, build 40524192
+    * Clustering: 77.449 s
+    * Training: 358.21 s
+* Ubuntu (TBA)
 
 ## Requirements
 1. Docker or Docker Desktop
+2. Docker Compose
 
 ## Steps
 1. `git clone https://github.com/linusmotu/AnomalyDetection_ICCPS_Artifact.git`

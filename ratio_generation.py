@@ -504,6 +504,7 @@ if __name__ == '__main__':
     print("Deleting previously generated files...")
     reset_files()
     
+    start_time = time.time()
     print("0/5: Starting file generation...")
     cluster_correlation_optimization()
     print("3/5:Finished Ratio Generation...")
@@ -514,3 +515,5 @@ if __name__ == '__main__':
     print("Done generating files for the first part...")    
     print()    
     print("Continuing to training...")
+    elapsed_time = time.time() - start_time
+    print(f"Finished clustering and ratio generation in {elapsed_time:.3f} s")

@@ -1,12 +1,8 @@
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
-import datetime
-import importlib
 import os
-import json
 import time
 import sys
-import numpy as np
 import pickle
 from src.common_functions import *
 
@@ -151,6 +147,7 @@ if __name__ == "__main__":
         print(f'2/8:Saved optimized_residual_train_{new_filename}.pkl')
 
     ############ Step 2 ############
+    print("Training residuals, this takes a bit of time...")
 
     fp_residual = os.path.join(synth_results, f'optimized_residual_train_{new_filename}.pkl')
     with open(fp_residual, 'rb') as handle:
@@ -414,17 +411,17 @@ if __name__ == "__main__":
             print('len(df3):',len(df3))
             detection = len(df3)
             fraction_of_detection = detection /total_incident
-            print("fraction_of_detection: ",fraction_of_detection)
+            # print("fraction_of_detection: ",fraction_of_detection)
             missed = abs(total_incident - detection)
     #         fraction_FA  = false_alarm/ total_detection
             fraction_FA = false_alarm / (false_alarm + detection_attempts)
-            print('fraction_FA: ',fraction_FA)
+            # print('fraction_FA: ',fraction_FA)
             decision_factor = fraction_of_detection - fraction_FA
-            print('decision_factor:', decision_factor)
+            # print('decision_factor:', decision_factor)
             if((min_decision_fa < decision_factor)):
                 min_decision_fa = decision_factor
                 hyper_mapping[key1] = {'kappa':key2,'SF':key3}
-                print('false alarm: ',false_alarm)
+                # print('false alarm: ',false_alarm)
 
     print()
     print(hyper_mapping)
@@ -448,7 +445,6 @@ if __name__ == "__main__":
         filename = os.fsdecode(file)
         if 'incidents.pkl' in filename:
             fp = os.path.join(synth_data, filename)
-            print(fp)
             df = pd.read_pickle(fp)
             info_ratio_incidents.append(df)
     combined_ratio_frame_incidents = pd.concat(info_ratio_incidents)

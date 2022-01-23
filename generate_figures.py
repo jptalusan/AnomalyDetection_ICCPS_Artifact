@@ -1,5 +1,6 @@
 print("Generating figures...")
 
+from cgi import test
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import random
@@ -280,25 +281,6 @@ def test_all_kappas():
     fp_safe_margin = os.path.join(synth_results, f'optimized_hyper_mapping_{new_filename}.pkl')
     with open(fp_safe_margin, 'rb') as handle:
         hyper_mapping = pickle.load(handle)
-    
-    fp_safe_margin = os.path.join(synth_results, f'optimized_safe_margin_{new_filename}.pkl')
-    with open(fp_safe_margin, 'rb') as handle:
-        safe_margin = pickle.load(handle)
-
-    fp = os.path.join(synth_results, f'used_clusters_list_{new_filename}.pkl')
-    with open(fp, 'rb') as handle:
-        cluster_list = pickle.load(handle)
-
-    fp = os.path.join(synth_data, f'synth_cluster_ground_truth.pkl')
-    incident_GT_Frame = pd.read_pickle(fp)
-
-    fp_standard_limit = os.path.join(synth_results, f'optimized_standard_limit_{new_filename}.pkl')
-    with open(fp_standard_limit, 'rb') as handle:
-        standard_limit_5C = pickle.load(handle)
-    standard_limit_5C_Frame = pd.DataFrame(standard_limit_5C)
-
-    # Possible parameters used
-    SF_List = [3,5,7,9]
 
     info_ratio_incidents = []
     for file in os.listdir(synth_data):
@@ -312,13 +294,14 @@ def test_all_kappas():
     combined_ratio_frame_incidents = combined_ratio_frame_incidents.between_time(start_time, end_time)
     combined_ratio_frame_incidents =  combined_ratio_frame_incidents[(combined_ratio_frame_incidents.index.month == testing_months)]
     testing = combined_ratio_frame_incidents
-
-    # Part 1
     for _kappa in kappa_L:
         for hp in hyper_mapping:
             hyper_mapping[hp]['kappa'] = _kappa
             
         cross_validated_kappa_SF = hyper_mapping
+        fp_safe_margin = os.path.join(synth_results, f'optimized_safe_margin_{new_filename}.pkl')
+        with open(fp_safe_margin, 'rb') as handle:
+            safe_margin = pickle.load(handle)
 
         testing_Clist = testing[list(cross_validated_kappa_SF.keys())]
         testing_Clist.columns = list(cross_validated_kappa_SF.keys())
@@ -327,7 +310,7 @@ def test_all_kappas():
         test_residual = {}
         for column in testing_Clist.columns:
             grouped = testing_Clist[column].groupby([testing_Clist[column].index.hour,
-                                                     testing_Clist[column].index.minute])
+                                                            testing_Clist[column].index.minute])
 
             sm_per_C = safe_margin[column]
             kappa = cross_validated_kappa_SF[column]['kappa']
@@ -355,7 +338,24 @@ def test_all_kappas():
         with open(fp, 'wb') as handle:
             pickle.dump(test_residual, handle)
 
-    # Part 2
+    # Step 2
+    fp = os.path.join(synth_results, f'used_clusters_list_{new_filename}.pkl')
+    with open(fp, 'rb') as handle:
+        cluster_list = pickle.load(handle)
+
+    fp = os.path.join(synth_data, f'synth_cluster_ground_truth.pkl')
+    incident_GT_Frame = pd.read_pickle(fp)
+    print|(incident_GT_Frame.shape)
+
+    fp_safe_margin = os.path.join(synth_results, f'optimized_safe_margin_{new_filename}.pkl')
+    with open(fp_safe_margin, 'rb') as handle:
+        safe_margin = pickle.load(handle)
+
+    fp_standard_limit = os.path.join(synth_results, f'optimized_standard_limit_{new_filename}.pkl')
+    with open(fp_standard_limit, 'rb') as handle:
+        standard_limit_5C = pickle.load(handle)
+    standard_limit_5C_Frame = pd.DataFrame(standard_limit_5C)
+
     for _kappa in kappa_L:
         for hp in hyper_mapping:
             hyper_mapping[hp]['kappa'] = _kappa
@@ -367,11 +367,11 @@ def test_all_kappas():
         cross_validated_kappa_SF = hyper_mapping
 
         testing_incident_GT = incident_GT_Frame.between_time(start_time, end_time)
-        testing_incident_GT_Clist = testing_incident_GT[testing_incident_GT['cluster_head'].isin (cluster_list)]
-        testing_incident_GT_Clist = testing_incident_GT_Clist[testing_incident_GT_Clist.index.month == testing_months]
+        testing_incident_GT_Clist =  testing_incident_GT[testing_incident_GT['cluster_head'].isin (cluster_list)]
+        testing_incident_GT_Clist =  testing_incident_GT_Clist[testing_incident_GT_Clist.index.month == testing_months]
 
         testing = combined_ratio_frame_incidents.between_time(start_time, end_time)
-        testing =  testing[(testing.index.month>9) & (testing.index.month<=12) ]
+        testing = testing[testing.index.month == testing_months]
 
         testing_Clist = testing[list(cross_validated_kappa_SF.keys())]
         testing_Clist.columns = list(cross_validated_kappa_SF.keys())
@@ -411,9 +411,9 @@ def test_all_kappas():
         detection_GT = []
         for key,group in group_detection_report_by_cluster_id:
             foucsed_cluster = testing_incident_GT_Clist[testing_incident_GT_Clist['cluster_head']==key]
-            for index,row in group.iterrows():
+            for index, row in group.iterrows():
                 detection_type = 0
-                for index1,row1 in foucsed_cluster.iterrows():
+                for index1, row1 in foucsed_cluster.iterrows():
                     #iterate only incidents happend for the cluster 
                     if((index.month == index1.month) and (index.day == index1.day)):
                         #This means incident and detection are on the same day
@@ -479,7 +479,7 @@ def test_all_kappas():
             report[key] = {}
             report[key]['cluster_id'] = key
             total_actual_incident = len(testing_incident_GT_Clist[testing_incident_GT_Clist['cluster_head']==key])
-            
+
             report[key]['total_actual_incident'] = total_actual_incident
 
             group = group[~group.index.duplicated(keep='first')]
@@ -499,6 +499,7 @@ def test_all_kappas():
             detection = len(list(group[group['detection_type'] == 1]['detection_number'].unique()))
             c_detection = len(list(group[group['detection_type'] == 2]['detection_number'].unique()))
             fa_alarm  = total - detection - c_detection
+            print('total: ',total,' detection: ',detection,' c_detection: ',c_detection,' fa_alarm: ',fa_alarm,' count: ',count)
             report[key]['results'] = {'total': total, 'detection': detection, 'c_detection': c_detection, 'fa_alarm': fa_alarm, 'count': count}
 
         # Saving and backing up
@@ -511,6 +512,7 @@ def test_all_kappas():
 
         fp = os.path.join(synth_results, f'{_kappa}_optimized_detection_report_Frame_{new_filename}.pkl')
         detection_report_Frame.to_pickle(fp)
+
 
 def find_average_gap_between_alarms(cluster_list, detection_frame, granularity=5):
     average_false_alarm_gap = []
@@ -769,7 +771,7 @@ def graph_ith_cluster():
                                 })
 
     kappa_df = pd.DataFrame(kappa_results_list)
-
+    print(kappa_df)
     tp = kappa_df['counts']
     tn = kappa_df['attempts'] - kappa_df['total_actual_incidents'] - kappa_df['fa_alarms']
     fp = kappa_df['fa_alarms']
@@ -835,7 +837,7 @@ if __name__ == "__main__":
 
     print("0/6:Starting to generate table and graphs...")
     print("1/6:Generating Clustering Data Table...")
-    #clustering_table_2()
+    clustering_table_2()
 
     print("2/6:Generating map and clusters...")
     cluster_graph()

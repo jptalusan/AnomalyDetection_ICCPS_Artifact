@@ -31,6 +31,18 @@ if not os.path.exists(os.path.join(os.getcwd(), 'synthetic_figures')):
     raise OSError("Must first download data, see README.md")
 synth_figures = os.path.join(os.getcwd(), 'synthetic_figures')
 
+## RESET ##
+def reset_files():
+    exception = ['.gitignore']
+
+    for file in os.listdir(synth_figures):
+        filename = os.fsdecode(file)
+        if filename not in exception:
+            fp = os.path.join(synth_figures, filename)
+            os.remove(fp)
+
+reset_files()
+
 start_time = '06:00'
 end_time   = '20:55'
 training_months = 10

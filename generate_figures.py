@@ -644,10 +644,49 @@ def graph_kappa_results():
     plt.savefig(fp, dpi=200, format='png', bbox_inches='tight')
     return kappa_df
 
-def graph_ROC(kappa_df):
+def graph_ROC():
+    fp = os.path.join(synth_results, f'used_clusters_list_{new_filename}.pkl')
+    with open(fp, 'rb') as handle:
+        cluster_list = pickle.load(handle)
+
     fp = os.path.join(synth_results, f'optimized_hyper_mapping_{new_filename}.pkl')
     with open(fp, 'rb') as handle:
         hyper_mapping = pickle.load(handle)
+        
+    kappa_results_list = []
+    for _kappa in kappa_L:
+        fp = os.path.join(synth_results, f'{_kappa}_optimized_results_{new_filename}.pkl')
+        with open(fp, 'rb') as handle:
+            report = pickle.load(handle) 
+            
+        for cluster in cluster_list:
+            if cluster not in report:
+                continue
+            rep = report[cluster]
+            kappa_results_list.append({'kappa': _kappa,
+                                'total_actual_incidents': rep['total_actual_incident'],
+                                'c_detections': rep['results']['c_detection'],
+                                'counts'      : rep['results']['count'],
+                                'detections'  : rep['results']['detection'],
+                                'fa_alarms'   : rep['results']['fa_alarm'],
+                                'totals'      : rep['results']['total'],
+                                'attempts'    : detection_attempts
+                                })
+
+    kappa_df = pd.DataFrame(kappa_results_list)
+
+    tp = kappa_df['counts']
+    tn = kappa_df['attempts'] - kappa_df['total_actual_incidents'] - kappa_df['fa_alarms']
+    fp = kappa_df['fa_alarms']
+    fn = kappa_df['total_actual_incidents'] - kappa_df['counts']
+
+    kappa_df['TPR'] =  tp / (tp + fn)
+    kappa_df['FPR'] = fp / (fp + tn)
+
+    beta = 0.9
+    kappa_df['precision'] = tp / (tp + fp)
+    kappa_df['recall'] = tp / (tp + fn)
+    kappa_df['f_beta'] = (1 + beta**2) * (kappa_df['precision'] * kappa_df['recall']) / (beta**2 * kappa_df['precision'] + kappa_df['recall'])
 
     _, ax = plt.subplots()
 
@@ -700,7 +739,50 @@ def graph_ROC(kappa_df):
     fp = os.path.join(synth_figures, 'synth_Figure_8a.png')
     plt.savefig(fp, format='png', dpi=200, bbox_inches='tight')
 
-def graph_ith_cluster(kappa_df):
+def graph_ith_cluster():
+    fp = os.path.join(synth_results, f'used_clusters_list_{new_filename}.pkl')
+    with open(fp, 'rb') as handle:
+        cluster_list = pickle.load(handle)
+
+    fp = os.path.join(synth_results, f'optimized_hyper_mapping_{new_filename}.pkl')
+    with open(fp, 'rb') as handle:
+        hyper_mapping = pickle.load(handle)
+        
+    kappa_results_list = []
+    for _kappa in kappa_L:
+        fp = os.path.join(synth_results, f'{_kappa}_optimized_results_{new_filename}.pkl')
+        with open(fp, 'rb') as handle:
+            report = pickle.load(handle) 
+            
+        for cluster in cluster_list:
+            if cluster not in report:
+                continue
+            rep = report[cluster]
+            kappa_results_list.append({'kappa': _kappa,
+                                'total_actual_incidents': rep['total_actual_incident'],
+                                'c_detections': rep['results']['c_detection'],
+                                'counts'      : rep['results']['count'],
+                                'detections'  : rep['results']['detection'],
+                                'fa_alarms'   : rep['results']['fa_alarm'],
+                                'totals'      : rep['results']['total'],
+                                'attempts'    : detection_attempts
+                                })
+
+    kappa_df = pd.DataFrame(kappa_results_list)
+
+    tp = kappa_df['counts']
+    tn = kappa_df['attempts'] - kappa_df['total_actual_incidents'] - kappa_df['fa_alarms']
+    fp = kappa_df['fa_alarms']
+    fn = kappa_df['total_actual_incidents'] - kappa_df['counts']
+
+    kappa_df['TPR'] =  tp / (tp + fn)
+    kappa_df['FPR'] = fp / (fp + tn)
+
+    beta = 0.9
+    kappa_df['precision'] = tp / (tp + fp)
+    kappa_df['recall'] = tp / (tp + fn)
+    kappa_df['f_beta'] = (1 + beta**2) * (kappa_df['precision'] * kappa_df['recall']) / (beta**2 * kappa_df['precision'] + kappa_df['recall'])
+    
     ith_cluster_df = kappa_df.loc[range(0, kappa_df.shape[0], kappa_df.shape[0]//len(kappa_L))].sort_values(by='kappa')
 
     # All metrics including all detection attempts
@@ -763,12 +845,12 @@ if __name__ == "__main__":
 
     print("4/6:Generating and graphing Kappa tests...")
     test_all_kappas()
-    kappa_df = graph_kappa_results()
+    graph_kappa_results()
 
     print("5/6:Graph ROC...")
-    graph_ROC(kappa_df=kappa_df)
+    graph_ROC()
 
     print("6/6:Graph for ith cluster...")
-    graph_ith_cluster(kappa_df=kappa_df)
+    graph_ith_cluster()
 
     print("Finished graphing everything...")

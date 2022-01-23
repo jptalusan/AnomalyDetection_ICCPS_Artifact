@@ -337,13 +337,20 @@ def cluster_correlation_optimization():
                 print(f"Center: {u} cannot be clustered, No segments inside. Time: {i_e_time:.2f}")
 
     print("1/5:Saved clustering as: synth_clustering.pkl")
-    fp = os.path.join(synth_data, f'synth_clustering.pkl')
-    with open(fp, 'wb') as handle:
-        pickle.dump(clusters, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
+    
     stats_df = pd.DataFrame(stats_dict)
     fp = os.path.join(synth_data, f'synth_optimized_clustering_stats.pkl')
     stats_df.to_pickle(fp)
+    
+    restricted_heads = stats_df[stats_df.clustered >= 4]['head'].to_list()
+    restricted_clusters = {}
+    for rh in restricted_heads:
+        restricted_clusters[rh] = clusters[rh]
+    clusters = restricted_clusters
+    
+    fp = os.path.join(synth_data, f'synth_clustering.pkl')
+    with open(fp, 'wb') as handle:
+        pickle.dump(clusters, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     fp = os.path.join(synth_data, 'synth_all_incidents_ground_truth.pkl')
     all_incidents_gt = pd.read_pickle(fp)

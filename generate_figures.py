@@ -102,7 +102,6 @@ def clustering_table_2():
         actual_incidents += results[r]['total_actual_incident']
         true_positives   += results[r]['results']['count']
         false_positives  += results[r]['results']['fa_alarm']
-        all_attempts     += detection_attempts
 
     tp = true_positives
     tn = all_attempts - actual_incidents - false_positives
@@ -129,7 +128,7 @@ def clustering_table_2():
             'balanced_accuracy': balanced_accuracy,
             'false_positive_rate': false_positive_rate
         }
-
+    print(data)
     TPR = data['balanced_accuracy']
     FPR = data['false_positive_rate']
 
@@ -149,10 +148,11 @@ def cluster_graph():
     fp = os.path.join(synth_data, f'synth_clustering.pkl')
     with open(fp, 'rb') as handle:
         clusters = pickle.load(handle)
-
+    print(len(clusters))
     fp = os.path.join(synth_data, 'synth_overall_means.pkl')
     df_overall_all = pd.read_pickle(fp)
     active_segments = df_overall_all.droplevel([0, 1]).reset_index()['segmentID'].unique().tolist()
+    print(len(active_segments))
 
     fp = os.path.join(synth_data, 'synth_segments_grouped.pkl')
     segments_df = pd.read_pickle(fp)
@@ -753,7 +753,7 @@ if __name__ == "__main__":
 
     print("0/6:Starting to generate table and graphs...")
     print("1/6:Generating Clustering Data Table...")
-    clustering_table_2()
+    #clustering_table_2()
 
     print("2/6:Generating map and clusters...")
     cluster_graph()

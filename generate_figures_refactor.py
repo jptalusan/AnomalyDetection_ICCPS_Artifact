@@ -65,6 +65,9 @@ with open(fp_standard_limit, 'rb') as handle:
     standard_limit_5C = pickle.load(handle)
 standard_limit_5C_Frame = pd.DataFrame(standard_limit_5C)
 
+fp = os.path.join(synth_data, f'synth_cluster_ground_truth.pkl')
+incident_GT_Frame = pd.read_pickle(fp)
+
 fp = os.path.join(synth_results, f'used_clusters_list_{new_filename}.pkl')
 with open(fp, 'rb') as handle:
     cluster_list = pickle.load(handle)
@@ -236,8 +239,6 @@ def generate_Baseline_Map():
     plt.savefig(fp, dpi=200)
 
 def generate_Figure_5():
-    fp = os.path.join(synth_data, f'synth_cluster_ground_truth.pkl')
-    incident_GT_Frame = pd.read_pickle(fp)
     testing_incident_GT =  incident_GT_Frame.between_time(start_time, end_time)
     testing_incident_GT_Clist =  testing_incident_GT[testing_incident_GT['cluster_head'].isin (clusters)].sort_index()
 

@@ -1,6 +1,6 @@
 echo "Starting ratio generation..."
 python ratio_generation.py
-echo "Starting training, might take +350s"
+echo "Starting training"
 python training.py
-echo "Generating Figures (untested with latest dataset)"
+echo "Generating Figures"
 python generate_figures.py

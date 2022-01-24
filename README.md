@@ -28,9 +28,8 @@ This will run the script as `root` user inside the container and will save the f
 ## Steps
 1. `git clone https://github.com/linusmotu/AnomalyDetection_ICCPS_Artifact.git`
 2. `cd AnomalyDetection_ICCPS_Artifact`
-3. Give permission to the `run_script.sh` before hand this only contains the python commands to run the evaluation.
-    * `chmod +x run_script.sh`
-4. `docker-compose up --build`
+3. `docker-compose up --build`
+4. Verify the resulting figures in `synthetic_figures` directory.
 
 ## Included synthetic data
 * `synthetic_data`

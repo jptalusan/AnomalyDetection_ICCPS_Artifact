@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 import random
@@ -133,10 +135,10 @@ beta = 20
 fbeta_measure       = ((1 + beta**2) * precision * true_positive_rate) / (beta**2 * precision + true_positive_rate)
 f_measure           = (2 * precision * true_positive_rate) / (precision + true_positive_rate)
 
-print(actual_incidents, true_positives, false_positives, all_attempts)
-print(f"{true_positive_rate:.2f}, {false_positive_rate:.5f}")
-print(f"{balanced_accuracy:.3f}, {accuracy:.3f}")
-print(f"{precision:.2f}, {fbeta_measure:.2f}, {f_measure:.2f}")
+# print(actual_incidents, true_positives, false_positives, all_attempts)
+# print(f"{true_positive_rate:.2f}, {false_positive_rate:.5f}")
+# print(f"{balanced_accuracy:.3f}, {accuracy:.3f}")
+# print(f"{precision:.2f}, {fbeta_measure:.2f}, {f_measure:.2f}")
 
 data = {'fbeta_measure': fbeta_measure,
         'balanced_accuracy': balanced_accuracy,

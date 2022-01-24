@@ -408,7 +408,6 @@ if __name__ == "__main__":
                                                 (detection_GT_Frame['kappa']==key2)&
                                                 (detection_GT_Frame['SF']==key3)]
             df3 = df3[~df3.index.duplicated(keep='first')]
-            print('len(df3):',len(df3))
             detection = len(df3)
             fraction_of_detection = detection /total_incident
             # print("fraction_of_detection: ",fraction_of_detection)
@@ -423,9 +422,7 @@ if __name__ == "__main__":
                 hyper_mapping[key1] = {'kappa':key2,'SF':key3}
                 # print('false alarm: ',false_alarm)
 
-    print()
     print(hyper_mapping)
-    print()
 
     # Saving and backing up
     fp = os.path.join(synth_results, f"optimized_hyper_mapping_{new_filename}.pkl")

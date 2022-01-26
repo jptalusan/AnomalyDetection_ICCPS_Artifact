@@ -1,6 +1,6 @@
 # ICCPS 2022
 ## Anomaly based Incident Detection in Large Scale Smart Transportation Systems
-This is the repository for our paper that was accepted to ICCPS2022. All private and proprietary data has been censored, anonymized and then synthesized. This has been tested on Ubuntu and OSX devices.
+This is the repository for our paper that was accepted to ICCPS2022. Original dataset used is private and proprietary data. We have made synthetic data that has been censored and anonymized. This has been tested on Unix systems (Ubuntu and OSX devices).
 
 This will run the script as `root` user inside the container and will save the files in your local directory as `root` as well.
 
@@ -9,14 +9,12 @@ This will run the script as `root` user inside the container and will save the f
     * 2.9 GHz Quad-Core Intel Core i7
     * Docker Desktop 2.5.0.1
     * docker-compose version 1.27.4, build 40524192
-    * Clustering: TBD
-    * Training: TBD
+    * Runtime: 1068 s
 * Ubuntu 20.04.1
     * AMD Ryzen Threadripper 3970X 32-Core
     * Docker version 20.10.5, build 55c4c88
     * docker-compose version 1.27.4, build 40524192
-    * Clustering: 169.528 s
-    * Training: 133.135 s
+    * Runtime: 300 s
 * Ubuntu
     * Intel(R) Xeon(R) CPU E5-1607 v3 @ 3.10GHz
     * Total: 3 minutes
@@ -25,10 +23,10 @@ This will run the script as `root` user inside the container and will save the f
 1. Docker or Docker Desktop
 2. Docker Compose
 
-## Steps
+## Instructions:
 1. `git clone https://github.com/linusmotu/AnomalyDetection_ICCPS_Artifact.git`
 2. `cd AnomalyDetection_ICCPS_Artifact`
-3. `docker-compose up --build`
+3. `sudo docker-compose up --build`
 4. Verify the resulting figures in `synthetic_figures` directory.
 
 ## Included synthetic data
